@@ -1,0 +1,6 @@
+# Only the streaks page is published. Everything else here (trading app, paper logs,
+# credentials helpers) stays local: ignore all, then allow the streaks files back in.
+/*
+!/.gitignore
+!/streaks.py
+!/.github/

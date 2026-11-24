@@ -1,0 +1,44 @@
+name: Streaks page
+
+on:
+  schedule:
+    # 09:05 and 15:05 UTC = 10:05 and 16:05 CET (11:05/17:05 during summer time). GitHub can start
+    # scheduled runs late; the :35 runs are retries, so a dropped or failed run is covered.
+    - cron: "5,35 9,15 * * *"
+  workflow_dispatch:  # "Run workflow" button on the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python streaks.py --selftest
+      # Fails (and leaves the live page as it was) if every league's data is unreachable.
+      - run: mkdir -p site && python streaks.py --out site/index.html && test -s site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
