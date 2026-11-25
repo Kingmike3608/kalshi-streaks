@@ -2,9 +2,9 @@ name: Streaks page
 
 on:
   schedule:
-    # 09:05 and 15:05 UTC = 10:05 and 16:05 CET (11:05/17:05 during summer time). GitHub can start
-    # scheduled runs late; the :35 runs are retries, so a dropped or failed run is covered.
-    - cron: "5,35 9,15 * * *"
+    # Hourly from 10:17 to 00:17 CET (UTC times below). GitHub often drops or delays scheduled runs by
+    # hours, so a run every hour keeps the page current; each one also picks up newly listed Kalshi lines.
+    - cron: "17 9-23 * * *"
   workflow_dispatch:  # "Run workflow" button on the Actions tab
   push:
     branches: [main]
